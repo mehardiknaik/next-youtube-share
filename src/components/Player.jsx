@@ -26,7 +26,7 @@ const Player = ({ url }) => {
 
   const handleSeekMouseUp = (e, x) => {
     ref.current.seekTo(parseFloat(x));
-    setSeeking(true);
+    setSeeking(false);
   };
 
   const handleSeekMouseDown = () => {

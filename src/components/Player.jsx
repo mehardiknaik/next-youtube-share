@@ -11,13 +11,14 @@ const Player = ({ url }) => {
   const ref = useRef();
   const [playing, setPlaying] = useState(false);
   const [onReady, setOnReady] = useState(false);
+  const [seeking, setSeeking] = useState(false);
   const [played, setPlayed] = useState(0);
 
   const handlePlayPause = () => {
     setPlaying(!playing);
   };
   const handleProgress = (state) => {
-    setPlayed(state.played);
+    if (!seeking) setPlayed(state.played);
   };
   const handleSeekChange = (x, newValue) => {
     setPlayed(parseFloat(newValue));
@@ -25,7 +26,11 @@ const Player = ({ url }) => {
 
   const handleSeekMouseUp = (e) => {
     ref.current.seekTo(played);
-    setPlaying(true);
+    setSeeking(true);
+  };
+
+  const handleSeekMouseDown = () => {
+    setSeeking(true);
   };
   return (
     <Box display={{ md: "flex" }} gap={1}>
@@ -87,7 +92,7 @@ const Player = ({ url }) => {
                 color="primary"
                 onMouseUp={handleSeekMouseUp}
                 loading={!onReady}
-                onMouseDown={() => setPlaying(false)}
+                onMouseDown={handleSeekMouseDown}
               />
             </Box>
           </CardContent>

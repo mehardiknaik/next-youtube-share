@@ -24,8 +24,8 @@ const Player = ({ url }) => {
     setPlayed(parseFloat(newValue));
   };
 
-  const handleSeekMouseUp = (e) => {
-    ref.current.seekTo(played);
+  const handleSeekMouseUp = (e, x) => {
+    ref.current.seekTo(parseFloat(x));
     setSeeking(true);
   };
 
@@ -90,7 +90,7 @@ const Player = ({ url }) => {
                 // getAriaValueText={valuetext}
                 onChange={handleSeekChange}
                 color="primary"
-                onMouseUp={handleSeekMouseUp}
+                onChangeCommitted={handleSeekMouseUp}
                 loading={!onReady}
                 onMouseDown={handleSeekMouseDown}
               />

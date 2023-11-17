@@ -51,7 +51,7 @@ const Hero = () => {
             variant="outlined"
             endIcon={<ArrowForwardIosIcon />}
           >
-            Send
+            Open
           </Button>
         </form>
       </CardContent>

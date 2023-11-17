@@ -6,7 +6,7 @@ const Header = () => {
     <AppBar position="sticky">
       <Toolbar>
         <Typography variant="h6" component="div">
-          Scroll to elevate App bar
+          Youtube Share
         </Typography>
       </Toolbar>
     </AppBar>

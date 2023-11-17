@@ -1,24 +1,43 @@
 "use client";
-import { Box, Button, Card, CardContent, Slider, Tooltip } from "@mui/material";
-import React, { useRef, useState } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Checkbox,
+  IconButton,
+  Slider,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-import LooksOneIcon from "@mui/icons-material/LooksOne";
+import StopIcon from "@mui/icons-material/Stop";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Duration from "./Duration";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import ShareIcon from "@mui/icons-material/Share";
 
 const Player = ({ url }) => {
   const ref = useRef();
   const [playing, setPlaying] = useState(false);
   const [onReady, setOnReady] = useState(false);
   const [seeking, setSeeking] = useState(false);
+  const [muted, setMuted] = useState(false);
   const [played, setPlayed] = useState(0);
+  const [playedSeconds, setPlayedSeconds] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [info, setInfo] = useState({});
 
   const handlePlayPause = () => {
     setPlaying(!playing);
   };
   const handleProgress = (state) => {
     if (!seeking) setPlayed(state.played);
+    setPlayedSeconds(state.playedSeconds);
   };
   const handleSeekChange = (x, newValue) => {
     setPlayed(parseFloat(newValue));
@@ -32,13 +51,40 @@ const Player = ({ url }) => {
   const handleSeekMouseDown = () => {
     setSeeking(true);
   };
+
+  const handleDuration = (duration) => {
+    setDuration(duration);
+  };
+  const handleMute = (x, y) => {
+    setMuted(y);
+  };
+
+  const handleStop = () => {
+    setPlaying(false);
+    ref.current.seekTo(0);
+    setPlayed(0);
+  };
+  const test = () => {
+    console.log(ref.current.getInternalPlayer());
+  };
+  useEffect(() => {
+    fetch(`https://noembed.com/embed?url=${url}`)
+      .then((x) => x.json())
+      .then((y) => {
+        console.log(y);
+        setInfo(y);
+      })
+      .catch((e) => {
+        console.log("error", e);
+      });
+  }, []);
   return (
-    <Box display={{ md: "flex" }} gap={1}>
-      <Box
+    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={1.5} mt={1}>
+      <Card
         sx={{
-          flex: 1,
+          gridColumn: { xs: "span 12", md: "span 6" },
           position: "relative",
-          paddingTop: { xs: "56.25%", md: "28.12%" },
+          paddingTop: "56.25%",
           "& .player": {
             position: "absolute",
             top: 0,
@@ -56,9 +102,26 @@ const Player = ({ url }) => {
           playing={playing}
           onReady={() => setOnReady(true)}
           onProgress={handleProgress}
+          onDuration={handleDuration}
+          muted={muted}
         />
-      </Box>
-      <Box flex={1} mt={2}>
+      </Card>
+      <Card
+        sx={{
+          gridColumn: { xs: "span 12", md: "span 6" },
+          gridRowStart: 2,
+        }}
+      >
+        <CardContent>
+          <Typography variant="body1" gutterBottom noWrap>
+            {info?.title}
+          </Typography>
+          <Typography variant="body2" noWrap>
+            {info?.author_name}
+          </Typography>
+        </CardContent>
+      </Card>
+      <Box gridColumn={{ xs: "span 12", md: "span 6" }}>
         <Card>
           <CardContent>
             <Box textAlign={"center"}>
@@ -72,16 +135,34 @@ const Player = ({ url }) => {
                   {playing ? <PauseIcon /> : <PlayArrowIcon />}
                 </LoadingButton>
               </Tooltip>
-              <Button
-                onClick={handlePlayPause}
-                color="primary"
-                size="large"
-                disabled={!playing}
-              >
-                <LooksOneIcon />
-              </Button>
+              <Tooltip title={"Stop"} arrow>
+                <Button
+                  onClick={handleStop}
+                  color="primary"
+                  size="large"
+                  disabled={!playing}
+                >
+                  <StopIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title={muted ? "Unmute" : "Mute"} arrow>
+                <Checkbox
+                  checked={muted}
+                  onChange={handleMute}
+                  icon={<VolumeUpIcon color="primary" />}
+                  checkedIcon={<VolumeOffIcon />}
+                />
+              </Tooltip>
             </Box>
-            <Box mt={1}>
+            <Box mt={-1}>
+              <Box display={"flex"} justifyContent={"space-between"}>
+                <Typography variant="subtitle1">
+                  <Duration seconds={duration * played} />
+                </Typography>
+                <Typography variant="subtitle1">
+                  <Duration seconds={duration} />
+                </Typography>
+              </Box>
               <Slider
                 value={played}
                 min={0}
@@ -94,6 +175,12 @@ const Player = ({ url }) => {
                 loading={!onReady}
                 onMouseDown={handleSeekMouseDown}
               />
+            </Box>
+            <Box textAlign={"center"}>
+              <Button>{playedSeconds}</Button>
+              <IconButton aria-label="share" color="primary" onClick={test}>
+                <ShareIcon />
+              </IconButton>
             </Box>
           </CardContent>
         </Card>

@@ -46,6 +46,7 @@ const Player = ({ url }) => {
   const handleSeekMouseUp = (e, x) => {
     ref.current.seekTo(parseFloat(x));
     setSeeking(false);
+    setPlaying(true);
   };
 
   const handleSeekMouseDown = () => {
@@ -151,6 +152,7 @@ const Player = ({ url }) => {
                   onChange={handleMute}
                   icon={<VolumeUpIcon color="primary" />}
                   checkedIcon={<VolumeOffIcon />}
+                  sx={{ ml: 1.4 }}
                 />
               </Tooltip>
             </Box>
@@ -164,6 +166,7 @@ const Player = ({ url }) => {
                 </Typography>
               </Box>
               <Slider
+                disabled={!onReady}
                 value={played}
                 min={0}
                 max={0.999999}
@@ -172,7 +175,6 @@ const Player = ({ url }) => {
                 onChange={handleSeekChange}
                 color="primary"
                 onChangeCommitted={handleSeekMouseUp}
-                loading={!onReady}
                 onMouseDown={handleSeekMouseDown}
               />
             </Box>

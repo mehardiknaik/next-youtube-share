@@ -71,7 +71,7 @@ const Player = ({ url }) => {
     try {
       await navigator.share({
         title: info?.title || "",
-        text: `this video i start from ${format(playedSeconds)}`,
+        text: `${info?.title} start from ${format(playedSeconds)}`,
         url: shareUrl,
       });
       console.log("Data was shared successfully");

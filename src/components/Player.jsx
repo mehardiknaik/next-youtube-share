@@ -16,7 +16,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import StopIcon from "@mui/icons-material/Stop";
 import LoadingButton from "@mui/lab/LoadingButton";
-import Duration from "./Duration";
+import Duration, { format } from "./Duration";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import ShareIcon from "@mui/icons-material/Share";
@@ -65,8 +65,19 @@ const Player = ({ url }) => {
     ref.current.seekTo(0);
     setPlayed(0);
   };
-  const test = () => {
-    console.log(ref.current.getInternalPlayer());
+  const share = async () => {
+    const shareUrl = `${url.split("&")[0]}&t=${parseInt(playedSeconds)}`;
+    console.log(shareUrl);
+    try {
+      await navigator.share({
+        title: info?.title || "",
+        text: `this video i start from ${format(playedSeconds)}`,
+        url: shareUrl,
+      });
+      console.log("Data was shared successfully");
+    } catch (err) {
+      console.error("Share failed:", err.message);
+    }
   };
   useEffect(() => {
     fetch(`https://noembed.com/embed?url=${url}`)
@@ -178,9 +189,12 @@ const Player = ({ url }) => {
                 onMouseDown={handleSeekMouseDown}
               />
             </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ mt: 1.5 }}>
+          <CardContent>
             <Box textAlign={"center"}>
-              <Button>{playedSeconds}</Button>
-              <IconButton aria-label="share" color="primary" onClick={test}>
+              <IconButton aria-label="share" color="primary" onClick={share}>
                 <ShareIcon />
               </IconButton>
             </Box>

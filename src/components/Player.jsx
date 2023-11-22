@@ -19,7 +19,11 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import Duration, { format } from "./Duration";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
-import ShareIcon from "@mui/icons-material/Share";
+import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
+import SendIcon from "@mui/icons-material/Send";
+import { forward, rewind } from "@/common/rewindButtons";
+import ReplayIcon from "@mui/icons-material/Replay";
+import Divider from "@mui/material/Divider";
 
 const Player = ({ url }) => {
   const ref = useRef();
@@ -48,6 +52,10 @@ const Player = ({ url }) => {
     setSeeking(false);
     setPlaying(true);
   };
+  const handleBackFor = (x) => {
+    ref.current.seekTo(playedSeconds + parseFloat(x));
+    // setPlayed(playedSeconds + parseFloat(x));
+  };
 
   const handleSeekMouseDown = () => {
     setSeeking(true);
@@ -65,7 +73,9 @@ const Player = ({ url }) => {
     ref.current.seekTo(0);
     setPlayed(0);
   };
+
   const share = async () => {
+    setPlaying(false);
     const shareUrl = `${url.split("&")[0]}&t=${parseInt(playedSeconds)}`;
     console.log(shareUrl);
     try {
@@ -193,10 +203,58 @@ const Player = ({ url }) => {
         </Card>
         <Card sx={{ mt: 1.5 }}>
           <CardContent>
-            <Box textAlign={"center"}>
-              <IconButton aria-label="share" color="primary" onClick={share}>
-                <ShareIcon />
-              </IconButton>
+            <Box
+              textAlign={"center"}
+              display={"flex"}
+              flexWrap={"wrap"}
+              justifyContent={{ md: "space-between" }}
+            >
+              {rewind.map((x) => (
+                <Button
+                  disabled={playedSeconds < Math.abs(x.time)}
+                  variant="text"
+                  startIcon={<ReplayIcon />}
+                  onClick={() => handleBackFor(x.time)}
+                >
+                  {x.title}
+                </Button>
+              ))}
+              <Divider orientation="vertical" flexItem />
+              <Tooltip
+                title={`Share at time ${format(duration * played)}`}
+                arrow
+              >
+                <IconButton aria-label="share" color="primary" onClick={share}>
+                  <ScheduleSendIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={`Share`} arrow>
+                <IconButton
+                  aria-label="share"
+                  color="primary"
+                  onClick={share}
+                  sx={{ ml: 2 }}
+                >
+                  <SendIcon />
+                </IconButton>
+              </Tooltip>
+              <Divider orientation="vertical" flexItem />
+              {forward.map((x) => (
+                <Button
+                  disabled={duration - playedSeconds < Math.abs(x.time)}
+                  variant="text"
+                  endIcon={
+                    <ReplayIcon
+                      sx={{
+                        transform: "scaleX(-1)",
+                      }}
+                    />
+                  }
+                  onClick={() => handleBackFor(x.time)}
+                >
+                  {x.title}
+                </Button>
+              ))}
             </Box>
           </CardContent>
         </Card>

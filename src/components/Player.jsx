@@ -215,6 +215,7 @@ const Player = ({ url }) => {
                   variant="text"
                   startIcon={<ReplayIcon />}
                   onClick={() => handleBackFor(x.time)}
+                  key={x.title}
                 >
                   {x.title}
                 </Button>
@@ -251,6 +252,7 @@ const Player = ({ url }) => {
                     />
                   }
                   onClick={() => handleBackFor(x.time)}
+                  key={x.title}
                 >
                   {x.title}
                 </Button>
